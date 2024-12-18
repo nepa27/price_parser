@@ -14,26 +14,29 @@ class_size = os.getenv('CLASS_SIZE_WB')
 
 def parse_wb(response):
     """Парсит цену на товар и наличие размеров в WB."""
-    soup = BeautifulSoup(response, 'lxml')
+    try:
+        soup = BeautifulSoup(response, 'lxml')
 
-    list_sizes = soup.find_all(
-        tag_list_size, class_=class_list_size)
+        list_sizes = soup.find_all(
+            tag_list_size, class_=class_list_size)
 
-    for tag in soup.find_all(tag_price):
-        if key_price in tag.get_text():
-            prices = tag.get_text()
-            break
-    prices = prices.split(key_price)
-    green_price = prices[0].strip()
-    main_price = prices[1].strip()
+        for tag in soup.find_all(tag_price):
+            if key_price in tag.get_text():
+                prices = tag.get_text()
+                break
+        prices = prices.split(key_price)
+        green_price = prices[0].strip()
+        main_price = prices[1].strip()
 
-    print(f'Цена с WB кошельком: {green_price}')
-    print(f'Цена без WB кошелька: {main_price}')
+        print(f'Цена с WB кошельком: {green_price}')
+        print(f'Цена без WB кошелька: {main_price}')
 
-    print('Наличие размеров:')
-    for i, el in enumerate(list_sizes):
-        size = el.find(tag_size, class_=class_size).text
-        print(f'{i + 1}. {size}')
+        print('Наличие размеров:')
+        for i, el in enumerate(list_sizes):
+            size = el.find(tag_size, class_=class_size).text
+            print(f'{i + 1}. {size}')
+    except BaseException as er:
+        print(f'Возникла ошибка: {er}')
 
 
 with open('wb.html', 'r') as f:

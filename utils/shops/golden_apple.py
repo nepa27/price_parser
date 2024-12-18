@@ -12,18 +12,21 @@ tag_volume = os.getenv('TAG_VOLUME_GA')
 
 def parse_golden_apple(response):
     """Парсит цену на товар в GOLDEN APPLE."""
+    try:
+        soup = BeautifulSoup(response, 'lxml')
+        data = soup.find(tag_price_volume).find(tag_volume)
 
-    soup = BeautifulSoup(response, 'lxml')
-    data = soup.find(tag_price_volume).find(tag_volume)
+        raw_prices = data.find_next_sibling()
+        raw_prices = raw_prices.text.split(key_price)
 
-    raw_prices = data.find_next_sibling()
-    raw_prices = raw_prices.text.split(key_price)
+        green_price = raw_prices[0].strip().rstrip()
+        main_price = raw_prices[1].strip().rstrip()
 
-    green_price = raw_prices[0].strip().rstrip()
-    main_price = raw_prices[1].strip().rstrip()
+        print(f'Цена с картой: {green_price}')
+        print(f'Цена без карты: {main_price}')
 
-    print(f'Цена с картой: {green_price}')
-    print(f'Цена без карты: {main_price}')
+    except BaseException as er:
+        print(f'Возникла ошибка: {er}')
 
 
 with open('golden.html', 'r') as f:
