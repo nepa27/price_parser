@@ -35,6 +35,7 @@ def parse_wb(response):
         size = el.find(tag_size, class_=class_size).text
         print(f'{i + 1}. {size}')
 
+
 with open('wb.html', 'r') as f:
     file = f.read()
 
