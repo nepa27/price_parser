@@ -9,6 +9,7 @@ from constants import FILES_PATH
 
 
 def get_page(url):
+    html = None
     now_date = datetime.now().strftime('%d_%m_%Y|%H_%M_%S')
     user_agent = UserAgent().random
 
@@ -18,16 +19,20 @@ def get_page(url):
 
     driver = webdriver.Chrome(options=options)
 
-    driver.get(url)
-    time.sleep(3)
+    try:
+        driver.get(url)
+        time.sleep(3)
 
-    html = driver.page_source
-    #
-    # if not os.path.exists(FILES_PATH):
-    #     os.mkdir(FILES_PATH)
-    #
-    # with open(f'{FILES_PATH}/{now_date}.html', 'w') as file:
-    #     file.write(html)
-    # driver.quit()
+        html = driver.page_source
+
+        if not os.path.exists(FILES_PATH):
+            os.mkdir(FILES_PATH)
+
+        with open(f'{FILES_PATH}/{now_date}.html', 'w') as file:
+            file.write(html)
+    except BaseException as er:
+        print(f'Возникла ошибка: {er}')
+    finally:
+        driver.quit()
 
     return html
