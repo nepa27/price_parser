@@ -1,26 +1,41 @@
+import os
+
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+
+load_dotenv('.env')
+key_price = os.getenv('FLAG_PRICE_WB')
+tag_price = os.getenv('TAG_PRICE_WB')
+tag_list_size = os.getenv('TAG_LIST_SIZE_WB')
+class_list_size = os.getenv('CLASS_LIST_SIZE_WB')
+tag_size = os.getenv('TAG_SIZE_WB')
+class_size = os.getenv('CLASS_SIZE_WB')
 
 
 def parse_wb(response):
     """Парсит цену на товар и наличие размеров в WB."""
     soup = BeautifulSoup(response, 'lxml')
 
-    list_sizes = soup.find(
-        'ul', class_='sizes-list visible'
-    ).find_all('label', class_='j-size sizes-list__button')
-    green_price = soup.find(
-        'span',
-        class_='product-line__price-wallet'
-    ).text.strip().rstrip(' ₽  ')
-    main_price = soup.find(
-        'b',
-        class_='product-line__price-now wallet'
-    ).text.strip().rstrip(' ₽  ')
+    list_sizes = soup.find_all(
+        tag_list_size, class_=class_list_size)
+
+    for tag in soup.find_all(tag_price):
+        if key_price in tag.get_text():
+            prices = tag.get_text()
+            break
+    prices = prices.split(key_price)
+    green_price = prices[0].strip()
+    main_price = prices[1].strip()
 
     print(f'Цена с WB кошельком: {green_price}')
     print(f'Цена без WB кошелька: {main_price}')
 
     print('Наличие размеров:')
     for i, el in enumerate(list_sizes):
-        size = el.find('span', class_='sizes-list__size').text
+        size = el.find(tag_size, class_=class_size).text
         print(f'{i + 1}. {size}')
+
+with open('wb.html', 'r') as f:
+    file = f.read()
+
+parse_wb(file)
