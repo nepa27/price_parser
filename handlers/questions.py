@@ -56,4 +56,3 @@ async def add_url(callback: CallbackQuery):
         'Вставьте ссылку на товар',
         reply_markup=button_back_kb(),
     )
-
