@@ -28,19 +28,19 @@ def shops_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(
         text='Wildberies',
-        callback_data='wildberies'
+        callback_data='shop_wildberies'
     )
     kb.button(
         text='Lime',
-        callback_data='lime'
+        callback_data='shop_lime'
     )
     kb.button(
         text='Золотое яблоко',
-        callback_data='golden_apple'
+        callback_data='shop_golden_apple'
     )
     kb.button(
         text='Аптека Горздрав',
-        callback_data='gorzdrav'
+        callback_data='shop_gorzdrav'
     )
     kb.button(
         text='Назад',

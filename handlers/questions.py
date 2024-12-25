@@ -1,14 +1,15 @@
-from aiogram import Bot, Router, F
+from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import (
     CallbackQuery,
-    ContentType,
-    FSInputFile,
     Message,
-    ReplyKeyboardRemove,
 )
 
-from keybords.for_questions import main_menu_kb, shops_kb
+from keybords.for_questions import (
+    main_menu_kb,
+    shops_kb,
+    button_back_kb
+)
 
 
 router = Router()
@@ -30,3 +31,29 @@ async def add_thing(callback: CallbackQuery):
         'Выберите магазин',
         reply_markup=shops_kb(),
     )
+
+
+@router.callback_query(F.data.startswith('shop'))
+async def add_url(callback: CallbackQuery):
+    await callback.message.edit_reply_markup(reply_markup=None)
+    if callback.data.endswith('wildberies'):
+        await callback.message.answer(
+            'Это wildberies!',
+        )
+    if callback.data.endswith('lime'):
+        await callback.message.answer(
+            'Это lime!',
+        )
+    if callback.data.endswith('golden_apple'):
+        await callback.message.answer(
+            'Это golden_apple!',
+        )
+    if callback.data.endswith('gorzdrav'):
+        await callback.message.answer(
+            'Это gorzdrav!',
+        )
+    await callback.message.answer(
+        'Вставьте ссылку на товар',
+        reply_markup=button_back_kb(),
+    )
+
