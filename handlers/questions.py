@@ -1,5 +1,7 @@
 from aiogram import Router, F
 from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import (
     CallbackQuery,
     Message,
@@ -12,11 +14,21 @@ from keybords.for_questions import (
 )
 
 
+class AppStates(StatesGroup):
+    main_menu = State()
+    choose_shop = State()
+    shop = State()
+
+
 router = Router()
 
 
 @router.message(Command('start'))
-async def cmd_start(message: Message):
+async def cmd_start(message: Message, state: FSMContext, delete_previous: bool = False):
+    if delete_previous:
+        await message.edit_reply_markup(reply_markup=None)
+        await message.delete()
+    await state.set_state(AppStates.main_menu)
     await message.answer(
         'Привет, я буду следить '
         'за ценами на Ваши товары!',
@@ -25,8 +37,10 @@ async def cmd_start(message: Message):
 
 
 @router.callback_query(F.data == 'add_thing')
-async def add_thing(callback: CallbackQuery):
+async def add_thing(callback: CallbackQuery, state: FSMContext, delete_previous: bool = False):
+    await state.set_state(AppStates.choose_shop)
     await callback.message.edit_reply_markup(reply_markup=None)
+    await callback.message.delete()
     await callback.message.answer(
         'Выберите магазин',
         reply_markup=shops_kb(),
@@ -34,25 +48,42 @@ async def add_thing(callback: CallbackQuery):
 
 
 @router.callback_query(F.data.startswith('shop'))
-async def add_url(callback: CallbackQuery):
+async def add_url(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(AppStates.shop)
     await callback.message.edit_reply_markup(reply_markup=None)
-    if callback.data.endswith('wildberies'):
-        await callback.message.answer(
-            'Это wildberies!',
-        )
-    if callback.data.endswith('lime'):
-        await callback.message.answer(
-            'Это lime!',
-        )
-    if callback.data.endswith('golden_apple'):
-        await callback.message.answer(
-            'Это golden_apple!',
-        )
-    if callback.data.endswith('gorzdrav'):
-        await callback.message.answer(
-            'Это gorzdrav!',
-        )
+    await callback.message.delete()
+    # if callback.data.endswith('wildberies'):
+    #     await callback.message.answer(
+    #         'Это wildberies!',
+    #     )
+    # if callback.data.endswith('lime'):
+    #     await callback.message.answer(
+    #         'Это lime!',
+    #     )
+    # if callback.data.endswith('golden_apple'):
+    #     await callback.message.answer(
+    #         'Это golden_apple!',
+    #     )
+    # if callback.data.endswith('gorzdrav'):
+    #     await callback.message.answer(
+    #         'Это gorzdrav!',
+    #     )
     await callback.message.answer(
         'Вставьте ссылку на товар',
         reply_markup=button_back_kb(),
     )
+
+@router.callback_query(F.data == 'back')
+async def go_to_back(callback: CallbackQuery, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state == AppStates.choose_shop:
+        current_state = await state.set_state(AppStates.main_menu)
+        await cmd_start(callback.message, state, delete_previous=True)
+    elif current_state == AppStates.shop:
+        current_state = await state.set_state(AppStates.choose_shop)
+        await add_thing(callback, state)
+
+    await callback.answer()
+
+
+# @router.callback_query(AppStates.shop)
