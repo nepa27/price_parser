@@ -24,32 +24,6 @@ def main_menu_kb() -> InlineKeyboardMarkup:
     return kb.as_markup(resize_keyboard=True)
 
 
-def shops_kb() -> InlineKeyboardMarkup:
-    kb = InlineKeyboardBuilder()
-    kb.button(
-        text='Wildberies',
-        callback_data='shop_wildberies'
-    )
-    kb.button(
-        text='Lime',
-        callback_data='shop_lime'
-    )
-    kb.button(
-        text='Золотое яблоко',
-        callback_data='shop_golden_apple'
-    )
-    kb.button(
-        text='Аптека Горздрав',
-        callback_data='shop_gorzdrav'
-    )
-    kb.button(
-        text='Назад',
-        callback_data='back'
-    )
-    kb.adjust(1)
-    return kb.as_markup(resize_keyboard=True)
-
-
 def tracking_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(
