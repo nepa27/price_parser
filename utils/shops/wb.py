@@ -3,6 +3,8 @@ import os
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
+from utils.request import get_page
+
 load_dotenv('.env')
 key_price = os.getenv('FLAG_PRICE_WB')
 tag_price = os.getenv('TAG_PRICE_WB')
@@ -14,9 +16,11 @@ class_size = os.getenv('CLASS_SIZE_WB')
 
 def parse_wb(response):
     """Парсит цену на товар и наличие размеров в WB."""
-    try:
-        soup = BeautifulSoup(response, 'lxml')
+    soup = BeautifulSoup(response, 'lxml')
 
+    try:
+        dirt_name = soup.find('h1').text.split()
+        name_thing = ' '.join(dirt_name)
         list_sizes = soup.find_all(
             tag_list_size, class_=class_list_size)
 
@@ -28,6 +32,7 @@ def parse_wb(response):
         green_price = prices[0].strip()
         main_price = prices[1].strip()
 
+        print(f'Название: {name_thing}')
         print(f'Цена с WB кошельком: {green_price}')
         print(f'Цена без WB кошелька: {main_price}')
 
@@ -41,5 +46,5 @@ def parse_wb(response):
 
 with open('wb.html', 'r') as f:
     file = f.read()
-
 parse_wb(file)
+# parse_wb(get_page('https://www.wildberries.ru/catalog/15398363/detail.aspx'))
