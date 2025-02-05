@@ -6,6 +6,7 @@ from aiogram.types import (
     CallbackQuery,
     Message,
 )
+import validators
 
 from keybords.for_questions import (
     main_menu_kb,
@@ -73,6 +74,7 @@ async def add_url(callback: CallbackQuery, state: FSMContext):
         reply_markup=button_back_kb(),
     )
 
+
 @router.callback_query(F.data == 'back')
 async def go_to_back(callback: CallbackQuery, state: FSMContext):
     current_state = await state.get_state()
@@ -86,4 +88,14 @@ async def go_to_back(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-# @router.callback_query(AppStates.shop)
+@router.message(AppStates.shop)
+async def manipulation_with_url(message: Message, state: FSMContext):
+    if validators.url(message.text):
+        await message.answer(
+            'Валидный url!'
+        )
+        await cmd_start(message, state)
+    else:
+        await message.answer(
+            'Это не url!'
+        )
