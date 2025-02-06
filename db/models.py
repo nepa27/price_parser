@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey,UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, relationship
 
 
@@ -13,6 +13,7 @@ class ThingsTable(Base):
 
     id = Column(Integer, primary_key=True)
     url = Column(String, unique=True)
+    thing_name = Column(String)
     added_at = Column(DateTime, default=datetime.datetime.now)
 
     price = relationship(
@@ -20,6 +21,11 @@ class ThingsTable(Base):
         backref='thing'
     )
     id_user = Column(Integer, ForeignKey('users.id'))
+    __table_args__ = (
+        UniqueConstraint(
+            'url', 'id_user', name='unique_url_user'
+        ),
+    )
 
 
 class PricesOfThingsTable(Base):
@@ -37,7 +43,6 @@ class UsersTable(Base):
 
     id = Column(Integer, primary_key=True)
     tg_id = Column(Integer, unique=True)
-    username = Column(String)
 
     thing = relationship(
         'ThingsTable',
