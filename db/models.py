@@ -20,7 +20,7 @@ class ThingsTable(Base):
         'PricesOfThingsTable',
         backref='thing'
     )
-    id_user = Column(Integer, ForeignKey('users.id'))
+    id_user = Column(Integer, ForeignKey('users.tg_id'))
     __table_args__ = (
         UniqueConstraint(
             'url', 'id_user', name='unique_url_user'
