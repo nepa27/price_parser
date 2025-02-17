@@ -40,6 +40,7 @@ async def main():
     dp = Dispatcher()
     dp.include_router(questions.router)
 
+    # TODO: Переделать на вебхук!
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
