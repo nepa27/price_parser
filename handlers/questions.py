@@ -6,19 +6,22 @@ from aiogram.types import (
     CallbackQuery,
     Message,
 )
+from aiogram.types import InlineKeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 import validators
 
 from keybords.for_questions import (
     main_menu_kb,
     button_back_kb
 )
-from utils.shops import golden_apple, lime, wb
+from utils.main import choose_shop
+from db.db import add_data_on_thing, add_user, check_thing, get_list_things
 
 
 class AppStates(StatesGroup):
     main_menu = State()
     add_thing = State()
-    shop = State()
+    my_tracking = State()
 
 
 router = Router()
@@ -26,6 +29,7 @@ router = Router()
 
 @router.message(Command('start'))
 async def cmd_start(message: Message, state: FSMContext, delete_previous: bool = False):
+    await add_user(message.from_user.id)
     await state.set_state(AppStates.main_menu)
     if delete_previous:
         await message.edit_reply_markup(reply_markup=None)
@@ -52,25 +56,31 @@ async def add_thing(callback: CallbackQuery, state: FSMContext):
     )
 
 
-@router.message(AppStates.shop)
+@router.message(AppStates.add_thing)
 async def manipulation_with_url(message: Message, state: FSMContext):
+    url = message.text
+    user_id = message.from_user.id
     if validators.url(message.text):
-        # тут логика по парсингу цены товара
-        # Передаем пользователю информацию о добавлении
-        # товара и возвращаем его имя и цену
-        data = None
-        # Сделать в БД запрос на предмет существования этого товара у этого пользователя
-        check_data = None
+        check_data = await check_thing(url, message.from_user.id)
         if check_data:
             await message.answer(
                 'Товар уже находится в списке отслеживания!'
-                f'{data}'
             )
         else:
             await message.answer(
-                'Товар добавлен в Ваш список отслеживаний!'
-                f'{data}'
+                'Начинаем добавлять Ваш товар ...'
             )
+            data = await choose_shop(url)
+            if data:
+                await add_data_on_thing(url, user_id, data)
+                await message.answer(
+                    'Товар добавлен в Ваш список отслеживаний!'
+                    f'{data}'
+                )
+            else:
+                await message.answer(
+                    'Магазин недоступен!'
+                )
         await cmd_start(message, state)
     else:
         await message.answer(
@@ -84,7 +94,33 @@ async def go_to_back(callback: CallbackQuery, state: FSMContext):
     if current_state == AppStates.add_thing:
         current_state = await state.set_state(AppStates.main_menu)
         await cmd_start(callback.message, state, delete_previous=True)
+    if current_state == AppStates.my_tracking:
+        current_state = await state.set_state(AppStates.add_thing)
+        await add_thing(callback, state)
 
     await callback.answer()
 
 
+@router.callback_query(F.data == 'my_tracking')
+async def my_tracking(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(AppStates.my_tracking)
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await callback.message.delete()
+
+    builder = InlineKeyboardBuilder()
+    user_id = callback.message.from_user.id
+
+    data = await get_list_things(user_id)
+    if data:
+        for item in data:
+            builder.add(InlineKeyboardButton(
+                text=item.thing_name,
+                callback_data=f'thing_{item.thing_name}')
+            )
+        await callback.message.answer('Вы можете вернуться в Главное меню',
+                                      reply_markup=button_back_kb(),
+                                      )
+    else:
+        await callback.message.answer('Отслеживания отсутствуют!',
+                                      reply_markup=button_back_kb(),
+                                      )
