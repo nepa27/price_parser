@@ -12,6 +12,12 @@ from models import Base, ThingsTable, PricesOfThingsTable, UsersTable
 
 engine = create_async_engine('sqlite+aiosqlite:///example.db', echo=True)
 
+async_session = async_sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False
+)
+
 
 async def init_db():
     async with engine.begin() as conn:
@@ -19,12 +25,6 @@ async def init_db():
 
 
 async def add_user(user_id: int):
-    async_session = async_sessionmaker(
-        engine,
-        class_=AsyncSession,
-        expire_on_commit=False
-    )
-
     async with async_session() as session:
         response = select(UsersTable).where(
             UsersTable.tg_id == user_id,
@@ -42,12 +42,6 @@ async def add_user(user_id: int):
 
 
 async def check_thing(url: str, user_id: int):
-    async_session = async_sessionmaker(
-        engine,
-        class_=AsyncSession,
-        expire_on_commit=False
-    )
-
     async with async_session() as session:
         response = select(ThingsTable).where(
             and_(
@@ -62,12 +56,6 @@ async def check_thing(url: str, user_id: int):
 
 
 async def add_data_on_thing(url: str, user_id: int, data: list):
-    async_session = async_sessionmaker(
-        engine,
-        class_=AsyncSession,
-        expire_on_commit=False
-    )
-
     async with async_session() as session:
         date_today = datetime.datetime.now()
         thing = ThingsTable(
@@ -85,12 +73,6 @@ async def add_data_on_thing(url: str, user_id: int, data: list):
 
 
 async def add_new_price(thing_id: int, new_price: int):
-    async_session = async_sessionmaker(
-        engine,
-        class_=AsyncSession,
-        expire_on_commit=False
-    )
-
     async with (async_session() as session):
         response = select(ThingsTable).where(ThingsTable.id == thing_id)
         result = await session.execute(response)
@@ -108,12 +90,6 @@ async def check_price():
     think_id = 1
     new_price = 100
 
-    async_session = async_sessionmaker(
-        engine,
-        class_=AsyncSession,
-        expire_on_commit=False
-    )
-
     async with async_session() as session:
         response = select(PricesOfThingsTable).where(
             and_(
@@ -128,12 +104,6 @@ async def check_price():
 
 
 async def get_list_things(user_id: int):
-    async_session = async_sessionmaker(
-        engine,
-        class_=AsyncSession,
-        expire_on_commit=False
-    )
-
     async with async_session() as session:
         response = select(ThingsTable).where(
             ThingsTable.id_user == user_id,
