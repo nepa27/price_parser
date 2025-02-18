@@ -15,7 +15,7 @@ from keybords.for_questions import (
     button_back_kb
 )
 from utils.main import choose_shop
-from db.db import add_data_on_thing, add_user, check_thing, get_list_things, get_one_thing
+from db.db import add_data_on_thing, add_user, check_thing, get_list_things, get_one_thing, delete_one_thing
 
 
 class AppStates(StatesGroup):
@@ -162,3 +162,19 @@ async def thing(callback: CallbackQuery, state: FSMContext):
         f'Цена: {data_thing.price[-1].price}',
         reply_markup=builder.as_markup()
     )
+
+
+@router.callback_query(F.text.startswith('delete_thing_'))
+async def delete_thing(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await callback.message.delete()
+
+    think_id = callback.data.split('_')[1]
+    result = await delete_one_thing(int(think_id))
+
+    if result:
+        await callback.message.answer(
+            'Товар успешно удален!',
+        )
+        await state.set_state(AppStates.my_tracking)
+        await my_tracking(callback, state)
