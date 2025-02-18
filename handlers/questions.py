@@ -96,8 +96,8 @@ async def go_to_back(callback: CallbackQuery, state: FSMContext):
         await state.set_state(AppStates.main_menu)
         await cmd_start(callback.message, state, delete_previous=True)
     if current_state == AppStates.my_tracking:
-        await state.set_state(AppStates.add_thing)
-        await add_thing(callback, state)
+        await state.set_state(AppStates.main_menu)
+        await cmd_start(callback.message, state, delete_previous=True)
     if current_state == AppStates.thing:
         await state.set_state(AppStates.my_tracking)
         await my_tracking(callback, state)
@@ -135,7 +135,7 @@ async def my_tracking(callback: CallbackQuery, state: FSMContext):
                                       )
 
 
-@router.callback_query(F.text.startswith('thing_'))
+@router.callback_query(F.data.startswith('thing_'))
 async def thing(callback: CallbackQuery, state: FSMContext):
     await state.set_state(AppStates.thing)
     await callback.message.edit_reply_markup(reply_markup=None)
@@ -164,7 +164,7 @@ async def thing(callback: CallbackQuery, state: FSMContext):
     )
 
 
-@router.callback_query(F.text.startswith('delete_thing_'))
+@router.callback_query(F.data.startswith('delete_thing_'))
 async def delete_thing(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_reply_markup(reply_markup=None)
     await callback.message.delete()
