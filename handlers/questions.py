@@ -108,7 +108,7 @@ async def my_tracking(callback: CallbackQuery, state: FSMContext):
     await callback.message.delete()
 
     builder = InlineKeyboardBuilder()
-    user_id = callback.message.from_user.id
+    user_id = callback.from_user.id
 
     data = await get_list_things(user_id)
     if data:
