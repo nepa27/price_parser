@@ -170,15 +170,16 @@ async def thing(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data.startswith('delete_thing_'))
 async def delete_thing(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await callback.message.delete()
+    think_id = callback.data.split('_')[2]
+    thing_name = await delete_one_thing(int(think_id))
 
-    think_id = callback.data.split('_')[1]
-    result = await delete_one_thing(int(think_id))
-
-    if result:
+    if thing_name:
         await callback.message.answer(
-            'Товар успешно удален!',
+            f'Товар {thing_name} успешно удален!',
         )
-        await state.set_state(AppStates.my_tracking)
-        await my_tracking(callback, state)
+    else:
+        await callback.message.answer(
+            'Проблема при удалении товара, обратитесь в поддержку!',
+        )
+    await state.set_state(AppStates.my_tracking)
+    await my_tracking(callback, state)
