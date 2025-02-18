@@ -130,8 +130,13 @@ async def delete_one_thing(think_id: int):
             ThingsTable.id == think_id,
         )
         result = await session.execute(response)
-        await session.commit()
-        return True if result.rowcount and result.rowcount > 0 else False
+        thing = result.scalar()
+        if thing:
+            await session.delete(thing)
+            await session.commit()
+            return thing.thing_name
+        else:
+            return False
 
 
 # async def main():
