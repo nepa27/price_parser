@@ -2,6 +2,7 @@ import asyncio
 import datetime
 
 from sqlalchemy import select, and_
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import (
     create_async_engine,
     AsyncSession,
@@ -110,6 +111,17 @@ async def get_list_things(user_id: int):
         )
         result = await session.execute(response)
         data = result.scalars().all()
+        return data if data else None
+
+
+async def get_one_thing(think_id: int):
+    async with async_session() as session:
+        response = select(ThingsTable).where(
+            ThingsTable.id == think_id,
+        ).options(selectinload(ThingsTable.price))
+
+        result = await session.execute(response)
+        data = result.scalars().first()
         return data if data else None
 #
 #

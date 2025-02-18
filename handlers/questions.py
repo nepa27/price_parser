@@ -15,13 +15,14 @@ from keybords.for_questions import (
     button_back_kb
 )
 from utils.main import choose_shop
-from db.db import add_data_on_thing, add_user, check_thing, get_list_things
+from db.db import add_data_on_thing, add_user, check_thing, get_list_things, get_one_thing
 
 
 class AppStates(StatesGroup):
     main_menu = State()
     add_thing = State()
     my_tracking = State()
+    thing = State()
 
 
 router = Router()
@@ -97,6 +98,9 @@ async def go_to_back(callback: CallbackQuery, state: FSMContext):
     if current_state == AppStates.my_tracking:
         current_state = await state.set_state(AppStates.add_thing)
         await add_thing(callback, state)
+    if current_state == AppStates.thing:
+        current_state = await state.set_state(AppStates.my_tracking)
+        await my_tracking(callback, state)
 
     await callback.answer()
 
@@ -115,7 +119,7 @@ async def my_tracking(callback: CallbackQuery, state: FSMContext):
         for item in data:
             builder.add(InlineKeyboardButton(
                 text=item.thing_name,
-                callback_data=f'thing_{item.thing_name}')
+                callback_data=f'thing_{item.id}')
             )
         builder.add(InlineKeyboardButton(
             text='Назад',
@@ -129,3 +133,21 @@ async def my_tracking(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer('Отслеживания отсутствуют!',
                                       reply_markup=button_back_kb(),
                                       )
+
+
+@router.callback_query(F.text.startswith('thing_'))
+async def thing(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(AppStates.thing)
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await callback.message.delete()
+
+    think_id = callback.data.split('_')[1]
+    data_thing = await get_one_thing(int(think_id))
+
+    await callback.message.answer(
+        f'Название: {data_thing.thing_name}'
+        f'Cсылка: {data_thing.url}'
+        f'Дата добавления: {data_thing.added_at}'
+        f'Цена: {data_thing.price[-1].price}',
+        reply_markup=button_back_kb()
+    )
