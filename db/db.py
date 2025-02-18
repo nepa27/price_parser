@@ -1,7 +1,7 @@
 import asyncio
 import datetime
 
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, delete
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import (
     create_async_engine,
@@ -123,14 +123,21 @@ async def get_one_thing(think_id: int):
         result = await session.execute(response)
         data = result.scalars().first()
         return data if data else None
-#
-#
+
+
+async def delete_one_thing(think_id: int):
+    async with async_session() as session:
+        response = select(ThingsTable).where(
+            ThingsTable.id == think_id,
+        )
+        result = await session.execute(response)
+        await session.commit()
+        return True if result.rowcount and result.rowcount > 0 else False
+
+
 # async def main():
-#     await init_db()  # Инициализация базы данных
-#     # await add_data_on_thing()  # Добавление данных
-#     # await check_price()
-#     # await check_thing('http://example2.com', 1)
-#     await get_list_things(123)
-# # Запуск основной функции
+#     await init_db()
+#     await delete_one_thing(1)
+#
 # if __name__ == "__main__":
 #     asyncio.run(main())
