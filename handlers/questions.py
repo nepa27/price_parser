@@ -144,10 +144,21 @@ async def thing(callback: CallbackQuery, state: FSMContext):
     think_id = callback.data.split('_')[1]
     data_thing = await get_one_thing(int(think_id))
 
+    builder = InlineKeyboardBuilder()
+    builder.add(InlineKeyboardButton(
+        text='Удалить из списка',
+        callback_data=f'delete_thing_{think_id}')
+    )
+    builder.add(InlineKeyboardButton(
+        text='Назад',
+        callback_data='back'
+    ))
+    builder.adjust(1)
+
     await callback.message.answer(
         f'Название: {data_thing.thing_name}'
         f'Cсылка: {data_thing.url}'
         f'Дата добавления: {data_thing.added_at}'
         f'Цена: {data_thing.price[-1].price}',
-        reply_markup=button_back_kb()
+        reply_markup=builder.as_markup()
     )
