@@ -26,11 +26,15 @@ class AppStates(StatesGroup):
 
 
 router = Router()
+cashed_user = set()
 
 
 @router.message(Command('start'))
 async def cmd_start(message: Message, state: FSMContext, delete_previous: bool = False):
-    await add_user(message.from_user.id)
+    user_id = message.from_user.id
+    if user_id not in cashed_user:
+        await add_user(user_id)
+        cashed_user.add(user_id)
     await state.set_state(AppStates.main_menu)
     if delete_previous:
         await message.edit_reply_markup(reply_markup=None)
@@ -156,10 +160,10 @@ async def thing(callback: CallbackQuery, state: FSMContext):
     builder.adjust(1)
 
     await callback.message.answer(
-        f'Название: {data_thing.thing_name}'
-        f'Cсылка: {data_thing.url}'
-        f'Дата добавления: {data_thing.added_at}'
-        f'Цена: {data_thing.price[-1].price}',
+        f'Название: {data_thing.thing_name}\n'
+        f'Cсылка: {data_thing.url}\n'
+        f'Дата добавления: {data_thing.added_at}\n'
+        f'Цена: {data_thing.price[-1].price}\n',
         reply_markup=builder.as_markup()
     )
 
