@@ -1,7 +1,7 @@
 import asyncio
 import datetime
 
-from sqlalchemy import select, and_, delete
+from sqlalchemy import select, and_
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import (
     create_async_engine,
@@ -19,6 +19,7 @@ async_session = async_sessionmaker(
     expire_on_commit=False
 )
 
+cashed_user = set()
 
 async def init_db():
     async with engine.begin() as conn:
@@ -26,20 +27,21 @@ async def init_db():
 
 
 async def add_user(user_id: int):
-    async with async_session() as session:
-        response = select(UsersTable).where(
-            UsersTable.tg_id == user_id,
+    if user_id not in cashed_user:
+        async with async_session() as session:
+            response = select(UsersTable).where(
+                UsersTable.tg_id == user_id,
 
-        )
-        result = await session.execute(response)
-        user = result.scalar()
-
-        if user:
-            return user
-        else:
-            user = UsersTable(tg_id=user_id)
-            session.add(user)
-            await session.commit()
+            )
+            result = await session.execute(response)
+            user = result.scalar()
+            cashed_user.add(user_id)
+            if user:
+                return user
+            else:
+                user = UsersTable(tg_id=user_id)
+                session.add(user)
+                await session.commit()
 
 
 async def check_thing(url: str, user_id: int):
