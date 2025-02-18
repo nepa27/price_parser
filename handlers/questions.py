@@ -93,13 +93,13 @@ async def manipulation_with_url(message: Message, state: FSMContext):
 async def go_to_back(callback: CallbackQuery, state: FSMContext):
     current_state = await state.get_state()
     if current_state == AppStates.add_thing:
-        current_state = await state.set_state(AppStates.main_menu)
+        await state.set_state(AppStates.main_menu)
         await cmd_start(callback.message, state, delete_previous=True)
     if current_state == AppStates.my_tracking:
-        current_state = await state.set_state(AppStates.add_thing)
+        await state.set_state(AppStates.add_thing)
         await add_thing(callback, state)
     if current_state == AppStates.thing:
-        current_state = await state.set_state(AppStates.my_tracking)
+        await state.set_state(AppStates.my_tracking)
         await my_tracking(callback, state)
 
     await callback.answer()
