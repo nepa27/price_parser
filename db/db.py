@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker
 )
 
-from models import Base, ThingsTable, PricesOfThingsTable, UsersTable
+from db.models import Base, ThingsTable, PricesOfThingsTable, UsersTable
 
 engine = create_async_engine('sqlite+aiosqlite:///example.db', echo=True)
 
