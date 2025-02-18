@@ -117,8 +117,13 @@ async def my_tracking(callback: CallbackQuery, state: FSMContext):
                 text=item.thing_name,
                 callback_data=f'thing_{item.thing_name}')
             )
-        await callback.message.answer('Вы можете вернуться в Главное меню',
-                                      reply_markup=button_back_kb(),
+        builder.add(InlineKeyboardButton(
+            text='Назад',
+            callback_data='back'
+        ))
+        builder.adjust(1)
+        await callback.message.answer('Ваши отслеживания',
+                                      reply_markup=builder.as_markup()
                                       )
     else:
         await callback.message.answer('Отслеживания отсутствуют!',
