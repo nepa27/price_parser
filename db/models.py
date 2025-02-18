@@ -18,7 +18,8 @@ class ThingsTable(Base):
 
     price = relationship(
         'PricesOfThingsTable',
-        backref='thing'
+        backref='thing',
+        cascade='all, delete-orphan'
     )
     id_user = Column(Integer, ForeignKey('users.tg_id'))
     __table_args__ = (
