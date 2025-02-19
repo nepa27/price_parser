@@ -10,12 +10,13 @@ from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 import validators
 
+from db.db import add_data_on_thing, add_user, check_thing, get_list_things, get_one_thing, delete_one_thing
 from keybords.for_questions import (
     main_menu_kb,
     button_back_kb
 )
+from main import logger
 from utils.main import choose_shop
-from db.db import add_data_on_thing, add_user, check_thing, get_list_things, get_one_thing, delete_one_thing
 
 
 class AppStates(StatesGroup):
@@ -34,6 +35,7 @@ async def cmd_start(message: Message, state: FSMContext, delete_previous: bool =
     user_id = message.from_user.id
     if user_id not in cashed_user:
         await add_user(user_id)
+        logger.info(f'Пользователь с id = {user_id} добавлен в БД')
         cashed_user.add(user_id)
     await state.set_state(AppStates.main_menu)
     if delete_previous:
@@ -73,7 +75,8 @@ async def manipulation_with_url(message: Message, state: FSMContext):
             )
         else:
             await message.answer(
-                'Начинаем добавлять Ваш товар ...'
+                'Начинаем добавлять Ваш товар ...\n'
+                'Это может занять несколько минут.'
             )
             data = await choose_shop(url)
             if data:
@@ -81,6 +84,8 @@ async def manipulation_with_url(message: Message, state: FSMContext):
                 await message.answer(
                     f'Товар "{data[0]}"\nдобавлен в Ваш список отслеживаний!'
                 )
+                logger.info(f'Товар "{data[0]}"\nдобавлен в Ваш список '
+                            'отслеживаний!')
             else:
                 await message.answer(
                     'Магазин недоступен!'
@@ -176,9 +181,12 @@ async def delete_thing(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer(
             f'Товар {thing_name} успешно удален!',
         )
+        logger.info( f'Товар {thing_name} успешно удален!')
     else:
         await callback.message.answer(
             'Проблема при удалении товара, обратитесь в поддержку!',
         )
+        logger.info(f'Проблема при удалении товара {think_id} - {thing_name},'
+                    ' обратитесь в поддержку!')
     await state.set_state(AppStates.my_tracking)
     await my_tracking(callback, state)

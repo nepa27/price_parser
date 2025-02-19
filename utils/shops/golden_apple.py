@@ -5,6 +5,8 @@ import re
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
+from main import logger
+
 
 load_dotenv('.env')
 key_price = os.getenv('FLAG_PRICE_GA')
@@ -44,6 +46,7 @@ def parse_golden_apple(response):
         # print(f'Название: {name_thing}')
         # print(f'Цена с картой: {green_price}')
         # print(f'Цена без карты: {main_price}')
+        logger.info(f'Спарсены данные {name_thing, green_price}')
         return name_thing, green_price
     except BaseException as er:
         print(f'Возникла ошибка: {er}')

@@ -3,6 +3,8 @@ import os
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
+from main import logger
+
 
 load_dotenv('.env')
 key_price = os.getenv('FLAG_PRICE_WB')
@@ -39,6 +41,7 @@ def parse_wb(response):
         # for i, el in enumerate(list_sizes):
         #     size = el.find(tag_size, class_=class_size).text
         #     print(f'{i + 1}. {size}')
+        logger.info(f'Спарсены данные {name_thing, green_price}')
         return name_thing, green_price
     except BaseException as er:
         print(f'Возникла ошибка: {er}')

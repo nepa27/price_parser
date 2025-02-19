@@ -5,6 +5,8 @@ import re
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
+from main import logger
+
 
 load_dotenv('.env')
 key_price = os.getenv('FLAG_PRICE_LIME')
@@ -31,6 +33,7 @@ def parse_lime(response):
             main_price = json_data[key_list_price_lime][key_price_lime]
         # print(f'Название: {name_thing}')
         # print(f'Цена: {main_price}')
+        logger.info(f'Спарсены данные {name_thing, main_price}')
         return name_thing, main_price
     except BaseException as er:
         print(f'Возникла ошибка: {er}')
