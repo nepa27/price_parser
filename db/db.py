@@ -1,7 +1,7 @@
 import asyncio
 import datetime
 
-from sqlalchemy import select, and_
+from sqlalchemy import event, select, and_
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
@@ -10,10 +10,17 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker
 )
 
-from db.models import Base, ThingsTable, PricesOfThingsTable, UsersTable
+from models import Base, ThingsTable, PricesOfThingsTable, UsersTable
 from main import logger
 
-engine = create_async_engine('sqlite+aiosqlite:///example.db', echo=True)
+engine = create_async_engine('sqlite+aiosqlite:///example.db', echo=False)
+
+
+@event.listens_for(engine.sync_engine, 'before_cursor_execute')
+def log_raw_queries(conn, cursor, statement, parameters, context, *args):
+    if isinstance(statement, str) and 'FROM' in statement:
+        logger.info(f'Запрос в БД {statement} с параметрами {parameters}')
+
 
 async_session = async_sessionmaker(
     engine,
@@ -188,9 +195,9 @@ async def delete_one_thing(think_id: int):
         return None
 
 
-# async def main():
-#     await init_db()
-#     await delete_one_thing(1)
-#
-# if __name__ == "__main__":
-#     asyncio.run(main())
+async def main():
+    await init_db()
+    await delete_one_thing(1)
+
+if __name__ == "__main__":
+    asyncio.run(main())
