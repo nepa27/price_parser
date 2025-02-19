@@ -3,7 +3,6 @@ import os
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
-from utils.request import get_page
 
 load_dotenv('.env')
 key_price = os.getenv('FLAG_PRICE_WB')
@@ -32,19 +31,14 @@ def parse_wb(response):
         green_price = prices[0].strip()
         main_price = prices[1].strip()
 
-        print(f'Название: {name_thing}')
-        print(f'Цена с WB кошельком: {green_price}')
-        print(f'Цена без WB кошелька: {main_price}')
-
-        print('Наличие размеров:')
-        for i, el in enumerate(list_sizes):
-            size = el.find(tag_size, class_=class_size).text
-            print(f'{i + 1}. {size}')
+        # print(f'Название: {name_thing}')
+        # print(f'Цена с WB кошельком: {green_price}')
+        # print(f'Цена без WB кошелька: {main_price}')
+        #
+        # print('Наличие размеров:')
+        # for i, el in enumerate(list_sizes):
+        #     size = el.find(tag_size, class_=class_size).text
+        #     print(f'{i + 1}. {size}')
+        return name_thing, green_price
     except BaseException as er:
         print(f'Возникла ошибка: {er}')
-
-
-with open('wb.html', 'r') as f:
-    file = f.read()
-parse_wb(file)
-# parse_wb(get_page('https://www.wildberries.ru/catalog/15398363/detail.aspx'))

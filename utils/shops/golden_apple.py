@@ -5,8 +5,6 @@ import re
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
-from utils.request import get_page
-
 
 load_dotenv('.env')
 key_price = os.getenv('FLAG_PRICE_GA')
@@ -43,15 +41,9 @@ def parse_golden_apple(response):
             green_price = int(prices['loyalty']['amount'])
             main_price = int(prices['actual']['amount'])
 
-        print(f'Название: {name_thing}')
-        print(f'Цена с картой: {green_price}')
-        print(f'Цена без карты: {main_price}')
-
+        # print(f'Название: {name_thing}')
+        # print(f'Цена с картой: {green_price}')
+        # print(f'Цена без карты: {main_price}')
+        return name_thing, green_price
     except BaseException as er:
         print(f'Возникла ошибка: {er}')
-
-
-with open('golden.html', 'r') as f:
-    file = f.read()
-parse_golden_apple(file)
-# parse_golden_apple(get_page('https://goldapple.ru/26730700002-blanche'))

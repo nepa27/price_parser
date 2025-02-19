@@ -5,7 +5,6 @@ import re
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
-from utils.request import get_page
 
 load_dotenv('.env')
 key_price = os.getenv('FLAG_PRICE_LIME')
@@ -30,14 +29,8 @@ def parse_lime(response):
             json_data = json.loads(data[0])
             name_thing = json_data[key_name_lime]
             main_price = json_data[key_list_price_lime][key_price_lime]
-        print(f'Название: {name_thing}')
-        print(f'Цена: {main_price}')
+        # print(f'Название: {name_thing}')
+        # print(f'Цена: {main_price}')
+        return name_thing, main_price
     except BaseException as er:
         print(f'Возникла ошибка: {er}')
-
-
-with open('lime_sale.html', 'r') as f:
-    file = f.read()
-
-# parse_lime(get_page('https://lime-shop.com/ru_ru/product/21901_9983_688-sero_koricnevyi'))
-parse_lime(file)
