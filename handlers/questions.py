@@ -79,8 +79,7 @@ async def manipulation_with_url(message: Message, state: FSMContext):
             if data:
                 await add_data_on_thing(url, user_id, data)
                 await message.answer(
-                    'Товар добавлен в Ваш список отслеживаний!'
-                    f'{data}'
+                    f'Товар "{data[0]}"\nдобавлен в Ваш список отслеживаний!'
                 )
             else:
                 await message.answer(
@@ -89,7 +88,7 @@ async def manipulation_with_url(message: Message, state: FSMContext):
         await cmd_start(message, state)
     else:
         await message.answer(
-            'Это не url!'
+            'Это не url!\nВставьте корректную ссылку!'
         )
 
 
@@ -160,10 +159,10 @@ async def thing(callback: CallbackQuery, state: FSMContext):
     builder.adjust(1)
 
     await callback.message.answer(
-        f'Название: {data_thing.thing_name}\n'
-        f'Cсылка: {data_thing.url}\n'
-        f'Дата добавления: {data_thing.added_at}\n'
-        f'Цена: {data_thing.price[-1].price}\n',
+        f'*Название*: {data_thing.thing_name}\n'
+        f'*Cсылка*: {data_thing.url}\n'
+        f'*Дата добавления*: {data_thing.added_at}\n'
+        f'*Цена*: {data_thing.latest_price.price}\n',
         reply_markup=builder.as_markup()
     )
 
