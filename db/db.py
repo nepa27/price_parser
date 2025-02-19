@@ -63,12 +63,14 @@ async def add_data_on_thing(url: str, user_id: int, data: list):
             id_user=user_id,
             thing_name=data[0]
         )
+        session.add(thing)
+        await session.flush()
         price = PricesOfThingsTable(
             price=data[1],
             id_thing=thing.id,
             added_at=date_today
         )
-        session.add_all((thing, price))
+        session.add(price)
         await session.commit()
 
 
@@ -121,6 +123,13 @@ async def get_one_thing(think_id: int):
 
         result = await session.execute(response)
         data = result.scalars().first()
+        if data:
+            latest_price = sorted(
+                data.price,
+                key=lambda price:price.added_at,
+                reverse=True
+            )[0]
+            data.latest_price = latest_price
         return data if data else None
 
 
