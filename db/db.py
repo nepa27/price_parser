@@ -57,16 +57,17 @@ async def check_thing(url: str, user_id: int):
 
 async def add_data_on_thing(url: str, user_id: int, data: list):
     async with async_session() as session:
+        thing_name, price = data
         date_today = datetime.datetime.now()
         thing = ThingsTable(
             url=url,
             id_user=user_id,
-            thing_name=data[0]
+            thing_name=thing_name
         )
         session.add(thing)
         await session.flush()
         price = PricesOfThingsTable(
-            price=data[1],
+            price=price,
             id_thing=thing.id,
             added_at=date_today
         )
