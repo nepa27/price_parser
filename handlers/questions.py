@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
