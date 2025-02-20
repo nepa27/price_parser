@@ -164,11 +164,12 @@ async def thing(callback: CallbackQuery, state: FSMContext):
     builder.adjust(1)
 
     await callback.message.answer(
-        f'*Название*: {data_thing.thing_name}\n'
-        f'*Cсылка*: {data_thing.url}\n'
-        f'*Дата добавления*: {data_thing.added_at}\n'
-        f'*Цена*: {data_thing.latest_price.price}\n',
-        reply_markup=builder.as_markup()
+        f'<b>Название</b>: {data_thing.thing_name}\n'
+        f'<b>Cсылка</b>: {data_thing.url}\n'
+        f'<b>Дата добавления</b>: {data_thing.added_at}\n'
+        f'<b>Цена</b>: {data_thing.latest_price.price}\n',
+        reply_markup=builder.as_markup(),
+        parse_mode='HTML'
     )
 
 
