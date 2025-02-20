@@ -10,8 +10,8 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker
 )
 
-from models import Base, ThingsTable, PricesOfThingsTable, UsersTable
-from main import logger
+from db.models import Base, ThingsTable, PricesOfThingsTable, UsersTable
+from log_config import logger
 
 engine = create_async_engine('sqlite+aiosqlite:///example.db', echo=False)
 

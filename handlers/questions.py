@@ -15,7 +15,7 @@ from keybords.for_questions import (
     main_menu_kb,
     button_back_kb
 )
-from main import logger
+from log_config import logger
 from utils.main import choose_shop
 
 

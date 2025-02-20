@@ -5,7 +5,7 @@ import re
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
-from main import logger
+from log_config import logger
 
 
 load_dotenv('.env')
