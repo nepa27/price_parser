@@ -35,7 +35,6 @@ async def cmd_start(message: Message, state: FSMContext, delete_previous: bool =
     user_id = message.from_user.id
     if user_id not in cashed_user:
         await add_user(user_id)
-        logger.info(f'Пользователь с id = {user_id} добавлен в БД')
         cashed_user.add(user_id)
     await state.set_state(AppStates.main_menu)
     if delete_previous:
