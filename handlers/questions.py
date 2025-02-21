@@ -74,7 +74,9 @@ async def add_thing(callback: CallbackQuery, state: FSMContext):
                                       'или обратитесь в службу поддержки!.')
 
 
-@router.message(AppStates.add_thing)
+@router.message(F.text.regexp(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]'
+                              r'|[!\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'),
+                state='*')
 async def manipulation_with_url(message: Message, state: FSMContext):
     try:
         dirt_url = message.text
