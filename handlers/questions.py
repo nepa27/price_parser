@@ -1,3 +1,5 @@
+import re
+
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -75,7 +77,12 @@ async def add_thing(callback: CallbackQuery, state: FSMContext):
 @router.message(AppStates.add_thing)
 async def manipulation_with_url(message: Message, state: FSMContext):
     try:
-        url = message.text
+        dirt_url = message.text
+        url_match = re.search(
+            r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+            dirt_url
+        )
+        url = url_match.group()
         user_id = message.from_user.id
         if validators.url(message.text):
             check_data = await check_thing(url, message.from_user.id)
