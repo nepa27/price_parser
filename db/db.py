@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import os
 
@@ -189,25 +188,30 @@ async def check_price(bot):
             things = result.scalars().all()
 
             for thing in things:
-                thing_name, new_price = choose_shop(thing.url)
-                old_price = thing.price.price
+                thing_name, new_price = await choose_shop(thing.url)
+                old_price = sorted(
+                    thing.price,
+                    key=lambda price: price.added_at,
+                    reverse=True
+                )[0]
 
-                if old_price != new_price:
+                if int(old_price.price) != int(new_price):
                     await add_new_price(new_price, thing.id)
                     await bot.send_message(
                         chat_id=thing.id_user,
-                        text=f'Цена на <b>{thing_name}</b> изменились!\n'
-                             f'Старая цена: <b>{old_price}</b>\n'
+                        text=f'Цена на <b>{thing_name}</b> изменилась!\n'
+                             f'Старая цена: <b>{old_price.price}</b>\n'
                              f'Новая цена: <b>{new_price}</b>',
                         parse_mode='HTML'
                     )
-                await bot.send_message(
-                    chat_id=thing.id_user,
-                    text=f'Цена на <b>{thing_name}</b> не изменились!\n'
-                         f'Цена 3 часа назад: <b>{old_price}</b>\n'
-                         f'Цена сейчас: <b>{new_price}</b>',
-                    parse_mode='HTML'
-                )
+                else:
+                    await bot.send_message(
+                        chat_id=thing.id_user,
+                        text=f'Цена на <b>{thing_name}</b> НЕ изменилась!\n'
+                             f'Цена 3 часа назад: <b>{old_price.price}</b>\n'
+                             f'Цена сейчас: <b>{new_price}</b>',
+                        parse_mode='HTML'
+                    )
 
     except SQLAlchemyError as e:
         await session.rollback()
