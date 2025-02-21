@@ -30,8 +30,8 @@ def parse_wb(response):
                 prices = tag.get_text()
                 break
         prices = prices.split(key_price)
-        green_price = prices[0].strip()
-        main_price = prices[1].strip()
+        green_price = prices[0].strip().replace("\xa0", "")
+        main_price = prices[1].strip().replace("\xa0", "")
 
         # print(f'Название: {name_thing}')
         # print(f'Цена с WB кошельком: {green_price}')
