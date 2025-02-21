@@ -1,21 +1,19 @@
 import logging
+from logging.handlers import RotatingFileHandler
 import sys
-
-import asyncio
-from asyncio_logger import AsyncLogger, StreamHandlerAsync, FileHandlerAsync
 
 
 log_format = (
     '%(asctime)s - [%(levelname)s] -  %(name)s - '
     '(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
 )
-logger = AsyncLogger(__name__)
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-stream_handler = StreamHandlerAsync(stream=sys.stdout)
+stream_handler = logging.StreamHandler(stream=sys.stdout)
 stream_handler.setFormatter(logging.Formatter(log_format))
 
-file_handler = FileHandlerAsync(
+file_handler = RotatingFileHandler(
     f'{__file__}.log',
     maxBytes=5 * 1024 * 1024,
     backupCount=5,
