@@ -21,7 +21,7 @@ def get_page(url):
 
     try:
         driver.get(url)
-        time.sleep(3)
+        time.sleep(5)
 
         html = driver.page_source
 
