@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import os
 
@@ -93,7 +94,7 @@ async def add_data_on_thing(url: str, user_id: int, data: list):
             session.add(thing)
             await session.flush()
             price = PricesOfThingsTable(
-                price=price,
+                price=int(price),
                 id_thing=thing.id,
                 added_at=date_today
             )
@@ -189,6 +190,7 @@ async def check_price(bot):
 
             for thing in things:
                 thing_name, new_price = await choose_shop(thing.url)
+                await asyncio.sleep(1 * 60)
                 old_price = sorted(
                     thing.price,
                     key=lambda price: price.added_at,
@@ -204,16 +206,21 @@ async def check_price(bot):
                              f'Новая цена: <b>{new_price}</b>',
                         parse_mode='HTML'
                     )
-                else:
-                    await bot.send_message(
-                        chat_id=thing.id_user,
-                        text=f'Цена на <b>{thing_name}</b> НЕ изменилась!\n'
-                             f'Цена 3 часа назад: <b>{old_price.price}</b>\n'
-                             f'Цена сейчас: <b>{new_price}</b>',
-                        parse_mode='HTML'
-                    )
+                    # else:
+                    #     await bot.send_message(
+                    #         chat_id=thing.id_user,
+                    #         text=f'Цена на <b>{thing_name}</b> НЕ изменилась!\n'
+                    #              f'Цена 3 часа назад: <b>{old_price.price}</b>\n'
+                    #              f'Цена сейчас: <b>{new_price}</b>',
+                    #         parse_mode='HTML'
+                    #     )
 
     except SQLAlchemyError as e:
+        await session.rollback()
+        logger.error(e)
+        return None
+
+    except BaseException as e:
         await session.rollback()
         logger.error(e)
         return None
