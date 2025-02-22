@@ -74,9 +74,7 @@ async def add_thing(callback: CallbackQuery, state: FSMContext):
                                       'или обратитесь в службу поддержки!.')
 
 
-@router.message(F.text.regexp(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]'
-                              r'|[!\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'),
-                state='*')
+@router.message(F.text)
 async def manipulation_with_url(message: Message, state: FSMContext):
     try:
         dirt_url = message.text
@@ -84,40 +82,43 @@ async def manipulation_with_url(message: Message, state: FSMContext):
             r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
             dirt_url
         )
-        url = url_match.group()
-        user_id = message.from_user.id
-        if validators.url(message.text):
-            check_data = await check_thing(url, message.from_user.id)
-            if check_data:
-                await message.answer(
-                    'Товар уже находится в списке отслеживания!'
-                )
-            else:
-                await message.answer(
-                    'Начинаем добавлять Ваш товар ...\n'
-                    'Это может занять несколько минут.'
-                )
-                data = await choose_shop(url)
-                if data:
-                    await add_data_on_thing(url, user_id, data)
-                    await message.answer(
-                        f'Товар "{data[0]}"\nдобавлен в Ваш список отслеживаний!'
-                    )
-                    logger.info(f'Товар "{data[0]}"\nдобавлен в Ваш список '
-                                'отслеживаний!')
+
+        if url_match:
+            url = url_match.group()
+            user_id = message.from_user.id
+
+            if validators.url(url):
+                check_data = await check_thing(url, user_id)
+                if check_data:
+                    await message.answer('Товар уже находится в'
+                                         ' списке отслеживания!')
                 else:
                     await message.answer(
-                        'Магазин недоступен!'
+                        'Начинаем добавлять Ваш товар ...\n'
+                        'Это может занять несколько минут.'
                     )
-            await cmd_start(message, state)
+                    data = await choose_shop(url)
+                    if data:
+                        await add_data_on_thing(url, user_id, data)
+                        await message.answer(
+                            f'Товар "{data[0]}"\nдобавлен в Ваш '
+                            f'список отслеживаний!'
+                        )
+                        logger.info(f'Товар "{data[0]}"\nдобавлен в Ваш'
+                                    f' список отслеживаний!')
+                    else:
+                        await message.answer('Магазин недоступен!')
+                await cmd_start(message, state)
+            else:
+                await message.answer('Это не URL!\nВставьте корректную'
+                                     ' ссылку!')
         else:
-            await message.answer(
-                'Это не url!\nВставьте корректную ссылку!'
-            )
+            await message.answer('В сообщении не найдена ссылка. Пожалуйста,'
+                                 ' вставьте корректную ссылку.')
     except BaseException as e:
         logger.error(e)
         await message.answer('Произошла ошибка. Перезапустите бота или'
-                             ' обратитесь в службу поддержки!.')
+                             ' обратитесь в службу поддержки.')
 
 
 @router.callback_query(F.data == 'back')
