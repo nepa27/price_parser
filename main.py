@@ -21,7 +21,7 @@ async def main():
         await check_price(bot)
 
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(check_price_wrapper, 'interval', hours=3)
+    scheduler.add_job(check_price_wrapper, 'interval', hours=1)
     scheduler.start()
 
     await init_db()
