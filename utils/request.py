@@ -1,16 +1,13 @@
 import time
-from datetime import datetime
 
 from fake_useragent import UserAgent
 from selenium import webdriver
 import undetected_chromedriver as uc
 
-from constants import FILES_PATH
-
 
 def get_page(url):
     html = None
-    now_date = datetime.now().strftime('%d_%m_%Y|%H_%M_%S')
+    # now_date = datetime.now().strftime('%d_%m_%Y|%H_%M_%S')
     user_agent = UserAgent().random
 
     options = webdriver.ChromeOptions()
@@ -40,7 +37,7 @@ def get_page(url):
 
 def get_page_ozon(url):
     html = None
-    now_date = datetime.now().strftime('%d_%m_%Y|%H_%M_%S')
+    # now_date = datetime.now().strftime('%d_%m_%Y|%H_%M_%S')
 
     options = uc.ChromeOptions()
     # options.add_argument('--headless')
