@@ -64,6 +64,7 @@ async def add_thing(callback: CallbackQuery, state: FSMContext):
             'Вставьте ссылку на товар\n'
             'Доступные магазины:\n'
             '- Wildberies\n'
+            '- OZON\n'
             '- Lime\n'
             '- Золотое яблоко\n',
             reply_markup=button_back_kb(),
