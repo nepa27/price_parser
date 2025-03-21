@@ -1,3 +1,4 @@
+import os
 import re
 
 from aiogram import Router, F
@@ -10,9 +11,17 @@ from aiogram.types import (
 )
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from dotenv import load_dotenv
 import validators
 
-from db.db import add_data_on_thing, add_user, check_thing, get_list_things, get_one_thing, delete_one_thing
+from db.db import (
+    add_data_on_thing,
+    add_user,
+    check_thing,
+    delete_one_thing,
+    get_list_things,
+    get_one_thing,
+)
 from keybords.for_questions import (
     main_menu_kb,
     button_back_kb
@@ -26,10 +35,14 @@ class AppStates(StatesGroup):
     add_thing = State()
     my_tracking = State()
     thing = State()
+    error_message = State()
 
 
 router = Router()
 cashed_user = set()
+
+load_dotenv('.env')
+ADMIN_ID = os.getenv('ADMIN_ID')
 
 
 @router.message(Command('start'))
@@ -64,7 +77,6 @@ async def add_thing(callback: CallbackQuery, state: FSMContext):
             'Вставьте ссылку на товар\n'
             'Доступные магазины:\n'
             '- Wildberies\n'
-            '- OZON\n'
             '- Lime\n'
             '- Золотое яблоко\n',
             reply_markup=button_back_kb(),
@@ -238,3 +250,22 @@ async def delete_thing(callback: CallbackQuery, state: FSMContext):
         logger.error(e)
         await callback.message.answer('Произошла ошибка. Перезапустите бота'
                                       ' или обратитесь в службу поддержки!.')
+
+
+@router.callback_query(F.data == 'send_message')
+async def say_about_errors(callback: CallbackQuery, state: FSMContext):
+    try:
+        await callback.message.edit_reply_markup(reply_markup=None)
+        await callback.message.delete()
+
+        error_message = callback.message.text
+        await callback.bot.send_message(ADMIN_ID, error_message)
+        await callback.message.answer(
+            'Ваше сообщение успешно отправлено!'
+        )
+
+        await cmd_start(callback.message, state, delete_previous=True)
+    except BaseException as e:
+        logger.error(e)
+        await callback.message.answer('Произошла ошибка. Перезапустите бота '
+                                      'или обратитесь в службу поддержки!.')
