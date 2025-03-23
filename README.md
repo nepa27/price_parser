@@ -19,11 +19,16 @@
 + Docker
 
 ## Демонстрация работы
-+ Главное меню ![menu.png](media%2Fmenu.png)
-+ Меню добавления товара ![example_add_thing.png](media%2Fexample_add_thing.png)
-+ Список товаров пользователя ![list_of_things.png](media%2Flist_of_things.png)
-+ Карточка товара ![product_card.png](media%2Fproduct_card.png)
-+ Сообщение об изменении цены ![change_price.png](media%2Fchange_price.png)
++ Главное меню 
+<img src="media/menu.png" alt="card" width="30%">
++ Меню добавления товара 
+<img src="media/example_add_thing.png" alt="card" width="30%">
++ Список товаров пользователя 
+<img src="media/list_of_things.png" alt="card" width="30%">
++ Карточка товара 
+<img src="media/product_card.png" alt="card" width="30%">
++ Сообщение об изменении цены 
+<img src="media/change_price.png" alt="card" width="30%">
 
 ## Планируемые улучшения
 + Отслеживание размеров одежды/обуви;
