@@ -3,7 +3,7 @@
 [![Asyncio](https://img.shields.io/badge/-Asyncio-464646?style=flat-square&logo=Asyncio)](https://docs.python.org/3/library/asyncio.html)
 [![Aiogram](https://img.shields.io/badge/-Aiogram-464646?style=flat-square&logo=Aiogram)](https://aiogram.readthedocs.io/)
 [![Selenium](https://img.shields.io/badge/-Selenium-464646?style=flat-square&logo=Selenium)](https://www.selenium.dev/documentation/)
-[![BeautifulSoup](https://img.shields.io/badge/-BeautifulSoup-464646?style=flat-square)](https://beautiful-soup.readthedocs.io/en/latest/)
+[![BeautifulSoup](https://img.shields.io/badge/-BeautifulSoup-464646?style=flat-square&logo=BeautifulSoup)](https://beautiful-soup.readthedocs.io/en/latest/)
 [![Docker](https://img.shields.io/badge/-Docker-464646?style=flat-square&logo=docker)](https://www.docker.com/)
 ## Описание
 Бот, который периодически проверяет цены на ваши товары и сообщает об изменениях.
